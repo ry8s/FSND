@@ -125,7 +125,7 @@ To start and run the local development server,
   ```
   $ cd YOUR_PROJECT_DIRECTORY_PATH/
   $ virtualenv  env
-  $ source env/bin/activate
+  $ source env/scripts/activate
   ```
 
 2. Install the dependencies:
