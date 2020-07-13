@@ -176,16 +176,16 @@ def search_venues():
   # search for "Music" should return "The Musical Hop" and "Park Square Live Music & Coffee"
 
   # get search term from request
-  search_term=request.form.get('search_term', '') 
+  search_term=request.form.get('search_term', '').lower() 
 
   # use search term to count, how many occurance can be find in database
   search_venues_count = (db.session.query(
     func.count(Venue.id))
-    .filter(Venue.name.contains(search_term))
+    .filter(func.lower(Venue.name).contains(search_term))
     .all())
 
   # use search term to find all Venue records in database
-  search_venues_result = Venue.query.filter(Venue.name.contains(search_term)).all()
+  search_venues_result = Venue.query.filter(func.lower(Venue.name).contains(search_term)).all()
 
   # create a well formatted response with above results
   response={
@@ -221,8 +221,8 @@ def show_venue(venue_id):
     Artist.name.label("artist_name"), 
     Artist.image_link.label("artist_image_link"), 
     Show)
-    .filter(Show.c.Venue_id == venue_id)
-    .filter(Show.c.Artist_id == Artist.id)
+    .join(Venue)
+    .join(Artist)
     .filter(Show.c.start_time <= datetime.now())
     .all())
   
@@ -232,22 +232,22 @@ def show_venue(venue_id):
     Artist.name.label("artist_name"), 
     Artist.image_link.label("artist_image_link"), 
     Show)
-    .filter(Show.c.Venue_id == venue_id)
-    .filter(Show.c.Artist_id == Artist.id)
+    .join(Venue)
+    .join(Artist)
     .filter(Show.c.start_time > datetime.now())
     .all())
 
   # Step 4: Get Number of past Shows
   single_venue.past_shows_count = (db.session.query(
     func.count(Show.c.Venue_id))
-    .filter(Show.c.Venue_id == venue_id)
+    .join(Venue)
     .filter(Show.c.start_time < datetime.now())
     .all())[0][0]
 
   # Step 5: Get Number of Upcoming Shows
   single_venue.upcoming_shows_count = (db.session.query(
     func.count(Show.c.Venue_id))
-    .filter(Show.c.Venue_id == venue_id)
+    .join(Venue)
     .filter(Show.c.start_time > datetime.now())
     .all())[0][0]
 
@@ -390,13 +390,13 @@ def search_artists():
   # search for "band" should return "The Wild Sax Band".
   
   # get search term from request
-  search_term=request.form.get('search_term', '')
+  search_term=request.form.get('search_term', '').lower()
 
   # use search term to count, how many occurance can be find in database
-  search_artist_count = db.session.query(func.count(Artist.id)).filter(Artist.name.contains(search_term)).all()
+  search_artist_count = db.session.query(func.count(Artist.id)).filter(func.lower(Artist.name).contains(search_term)).all()
   
   # use search term to find all Artist records in database
-  search_artist_result = Artist.query.filter(Artist.name.contains(search_term)).all()
+  search_artist_result = Artist.query.filter(func.lower(Artist.name).contains(search_term)).all()
   
   # create a well formatted response with above results
   response={
@@ -430,8 +430,8 @@ def show_artist(artist_id):
     Venue.name.label("venue_name"), 
     Venue.image_link.label("venue_image_link"), 
     Show)
-    .filter(Show.c.Artist_id == artist_id)
-    .filter(Show.c.Venue_id == Venue.id)
+    .join(Artist)
+    .join(Venue)
     .filter(Show.c.start_time <= datetime.now())
     .all())
   
@@ -441,22 +441,22 @@ def show_artist(artist_id):
     Venue.name.label("venue_name"), 
     Venue.image_link.label("venue_image_link"), 
     Show)
-    .filter(Show.c.Artist_id == artist_id)
-    .filter(Show.c.Venue_id == Venue.id)
+    .join(Artist)
+    .join(Venue)
     .filter(Show.c.start_time > datetime.now())
     .all())
 
   # Step 4: Get Number of past Shows
   single_artist.past_shows_count = (db.session.query(
     func.count(Show.c.Artist_id))
-    .filter(Show.c.Artist_id == artist_id)
+    .join(Artist)
     .filter(Show.c.start_time < datetime.now())
     .all())[0][0]
   
   # Step 5: Get Number of Upcoming Shows
   single_artist.upcoming_shows_count = (db.session.query(
     func.count(Show.c.Artist_id))
-    .filter(Show.c.Artist_id == artist_id)
+    .join(Artist)
     .filter(Show.c.start_time > datetime.now())
     .all())[0][0]
 
@@ -676,8 +676,8 @@ def shows():
     Artist.name.label("artist_name"), 
     Artist.image_link.label("artist_image_link"), 
     Show)
-    .filter(Show.c.Venue_id == Venue.id)
-    .filter(Show.c.Artist_id == Artist.id)
+    .join(Artist)
+    .join(Venue)
     .all())
 
   return render_template('pages/shows.html', shows=shows)
