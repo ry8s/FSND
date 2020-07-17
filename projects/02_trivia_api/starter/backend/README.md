@@ -67,8 +67,8 @@ One note before you delve into your tasks: for each endpoint you are expected to
 3. Create an endpoint to handle GET requests for all available categories. 
 4. Create an endpoint to DELETE question using a question ID. 
 5. Create an endpoint to POST a new question, which will require the question and answer text, category, and difficulty score. 
-6. Create a POST endpoint to get questions based on category. 
-7. Create a POST endpoint to get questions based on a search term. It should return any questions for whom the search term is a substring of the question. 
+6. Create a GET endpoint to get questions based on category. 
+7. Create a GET endpoint to get questions based on a search term. It should return any questions for whom the search term is a substring of the question. 
 8. Create a POST endpoint to get questions to play the quiz. This endpoint should take category and previous question parameters and return a random questions within the given category, if provided, and that is not one of the previous questions. 
 9. Create error handlers for all expected errors including 400, 404, 422 and 500. 
 
@@ -130,7 +130,7 @@ Here is a short table about which ressources exist and which method you can use 
        Endpoints    |  GET |  POST |  DELETE | 
                     |------|-------|---------|
       /questions    |  [x] |  [x]  |   [x]   |         
-      /categories   |  [x] |  [x]  |   [x]   |           
+      /categories   |  [x] |       |         |           
       /quizzes      |      |  [x]  |         | 
 
 
@@ -147,8 +147,6 @@ Click on a link to directly get to the ressource.
 3. Categories
    1. [GET /categories](#get-categories)
    2. [GET /categories/<category_id>/questions](#get-categories-questions)
-   3. [POST /categories](#post-categories)
-   4. [DELETE /categories](#delete-categories)
 
 Each ressource documentation is clearly structured:
 1. Description in a few words
@@ -601,119 +599,4 @@ will return
   "success": false
 }
 
-```
-# <a name="post-categories"></a>
-### 7. POST /categories
-
-Create new category.
-```bash
-curl -X POST http://127.0.0.1:5000/categories -d '{ "type" : "Nerd Stuff"}' -H 'Content-Type: application/json'
-```
-
-- Inserts a new `category` to extend gameplay with new kind of questions.
-- Request Arguments: **None**
-- Request Headers : (_application/json_) 
-   1. **string** type (<span style="color:red">*</span>required)
-- Returns: 
-  1. List of dict of all existing `categories` with following fields:
-      - **integer** `id` 
-      - **string** `type`
-  2. **integer** `total_categories` number of all `categories`
-  3. **integer** `created`  id from inserted `category`
-  4. **boolean** `success`
-
-#### Example response
-```js
-{
-  "categories": [
-    {
-      "id": 1,
-      "type": "Science"
-    },
-    {
-      "id": 2,
-      "type": "Art"
-    },
-    {
-      "id": 3,
-      "type": "Geography"
-    },
-    {
-      "id": 4,
-      "type": "History"
-    },
-    {
-      "id": 5,
-      "type": "Entertainment"
-    },
-    {
-      "id": 6,
-      "type": "Sports"
-    },
-    {
-      "id": 7,
-      "type": "Nerd Stuff"
-    }
-  ],
-  "created": 7,
-  "success": true,
-  "total_categories": 7
-}
-```
-
-
-#### Errors
-
-If you try to insert a new category without `type` field, it will throw an `400` error:
-```bash
-curl -X POST http://127.0.0.1:5000/categories -d '{ "name" : "Nerd Stuff"}' -H 'Content-Type: application/json'
-```
-
-will return
-
-```js
-{
-  "error": 400,
-  "message": "no type for new category provided.",
-  "success": false
-}
-```
-# <a name="delete-categories"></a>
-### 8. DELETE /categories/<category_id>
-
-Delete a Category
-```bash
-curl -X DELETE http://127.0.0.1:5000/categories/8
-```
-- Deletes specific `category` based on given id
-- Request Arguments: 
-  - **integer** `category_id`
-- Request Headers : **None**
-- Returns: 
-    - **integer** `deleted` Id from deleted `category`.
-    - **boolean** `success`
-
-
-#### Example response
-```js
-{
-  "deleted": 8,
-  "success": true
-}
-```
-
-### Errors
-
-If you try to delete a `category` which does not exist, it will throw an `404` error:
-
-```bash
-curl -X DELETE http://127.0.0.1:5000/categories/100
-```
-will return
-```js
-{
-  "error": 400,
-  "message": "Category with id 100 does not exist.",
-  "success": false
-}
 ```
